@@ -34,13 +34,19 @@ public class UserRegistration {
 
 	@Test
 	public void RealizarCadastroDeUsuario() {
+//		Execução do primeiro passo do Caso de Teste:Acessar o site https://automacaocombatista.herokuapp.com/home/index
+		
 		browser.get(URL_BASE);
 		assertTrue("Acessar o site " + UserRegistration.URL_BASE, browser.getTitle().contentEquals("Automação com Batista"));
+		
+//		Execução do segundo passo do Caso de Teste: Acessar “Começar Automação Web”
 		
 		browser.findElement(By.xpath("//a[text()='Começar Automação Web']")).click();
 		wait = new WebDriverWait(browser, Duration.ofSeconds(5));
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[text()='Formulário']")));
 		assertTrue("Acessar “Começar Automação Web”", browser.getPageSource().contains("Lista de Funcionalidades"));
+		
+//		Execução do terceiro passo do Caso de Teste: Preencher Formulário para cadastrar novo usuário
 		
 		browser.findElement(By.xpath("//a[text()='Formulário']")).click();
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[text()='Criar Usuários']")));
@@ -56,6 +62,8 @@ public class UserRegistration {
 		browser.findElement(By.id("user_gender")).sendKeys("Male");
 		browser.findElement(By.id("user_age")).sendKeys("67");
 		assertTrue("Preencher Formulário para cadastrar novo usuário", browser.getPageSource().contains("Novo Usuário!!"));
+		
+//		Execução do quarto passo do Caso de Teste: Validar mensagem de criação de usuário
 		
 		browser.findElement(By.xpath("//input[@type='submit']")).click();
 		assertTrue("Validar mensagem de criação de usuário", browser.getPageSource().contains("Usuário Criado com sucesso"));
