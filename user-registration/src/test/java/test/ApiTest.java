@@ -55,7 +55,7 @@ public class ApiTest {
 	}
 	
 	@Test
-	public void A_IserirContato() {
+	public void A_CriarContato() {
 		System.out.println("Teste Inserir Contato");
 				
 		JSONObject request = new JSONObject();
@@ -150,9 +150,9 @@ public class ApiTest {
 	}
 	
 	@Test
-	public void D_ExcluirContato() {
+	public void D_DeletarContato() {
 		wait(1000);
-		System.out.println("Teste Excluir Contato");
+		System.out.println("Teste Deletar Contato");
 		
 		String ID = jsonID("Zivojinovic Lifeson");
 		System.out.println("https://api-de-tarefas.herokuapp.com/contacts/" + ID);
