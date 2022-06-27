@@ -1,166 +1,167 @@
 package test;
 
-import static org.junit.Assert.assertEquals;
-
-import static org.junit.Assert.assertEquals;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
-import dev.failsafe.internal.util.Assert;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import io.restassured.response.ResponseBody;
-import io.restassured.response.ResponseBodyExtractionOptions;
-import io.restassured.response.ValidatableResponse;
-import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.*;
-//import static io.restassured.matcher.RestAssuredMatchers.*;
-//import static org.hamcrest.Matchers.*;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ApiTest {
 	
-	public class testeAPI1 {
+	public static String jsonID (String lastName) {
+		RestAssured.baseURI = "https://api-de-tarefas.herokuapp.com";
+		Response response = null;
 		
-//		Função que retorna o ID de cadastro do contato
-		public int idNumber (String lastName) {
-			RestAssured.baseURI = "https://api-de-tarefas.herokuapp.com";
-			Response response = null;
-			
-			try {
-				response = RestAssured.given()
-		                .when()
-		                .get("/contacts");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			JsonPath jsonPathValidator = response.jsonPath();
-			
-			List < String > allContactsNames = jsonPathValidator.getList("data.attributes.last_name");
-			List < String > allContactsID = jsonPathValidator.getList("data.id");
-			
-			int contactIndex = allContactsNames.indexOf(lastName);
-			int contactIndexID = allContactsID.indexOf(String.valueOf(contactIndex));
-			
-			System.out.println(allContactsNames.get(contactIndex));
-	        System.out.println(allContactsID.get(contactIndex));
-	        
-	        return contactIndexID;
+		try {
+			response = RestAssured.given()
+	                .when()
+	                .get("/contacts");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
-//		Função que retorna o ID de cadastro do contato
-		public int jsonIdIndex (String lastName) {
-			RestAssured.baseURI = "https://api-de-tarefas.herokuapp.com";
-			Response response = null;
-			
-			try {
-				response = RestAssured.given()
-		                .when()
-		                .get("/contacts");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			JsonPath jsonPathValidator = response.jsonPath();
-			
-			List < String > allContactsNames = jsonPathValidator.getList("data.attributes.last_name");
-			
-			int contactIndex = allContactsNames.indexOf(lastName);
-			
-			System.out.println(allContactsNames.get(contactIndex));
-	        
-	        return contactIndex;
-		}
+		JsonPath jsonPathValidator = response.jsonPath();
+		
+		List < String > allContactsNames = jsonPathValidator.getList("data.attributes.last-name");
+		List < String > allContactsID = jsonPathValidator.getList("data.id");
+		
+		int contactIndex = allContactsNames.indexOf(lastName);
+		int contactIndexID = allContactsID.indexOf(String.valueOf(contactIndex));
+		
+		System.out.println(allContactsNames.get(contactIndex));
+        System.out.println(allContactsID.get(contactIndex));
+        
+        String ID = allContactsID.get(contactIndex);
+        
+        return ID;
+	}
 	
-		@Test
-		public void IserirContato() {
-			
-			JSONObject request = new JSONObject();
-			request.put("name", "Alex");
-			request.put("last_name", "Lifeson");
-			request.put("email", "alex@rush.com");
-			request.put("age", "65");
-			request.put("phone", "21122134");
-			request.put("address", "Broadviwe Av.");
-			request.put("state", "Otario");
-			request.put("city", "Toronto");
-			
-			System.out.println(request);
-			
-			given()
-				.header("Content-Type", "application/json")
-				.contentType(ContentType.JSON)
-				.accept(ContentType.JSON)
-				.body(request.toJSONString())
-			.when()
-				.post("https://api-de-tarefas.herokuapp.com/contacts")
-			.then()
-				.statusCode(201);
-//				.log().all();
+	public static void wait(int ms)	{
+	    try {
+	        Thread.sleep(ms);
+	    }
+	    catch(InterruptedException ex) {
+	        Thread.currentThread().interrupt();
+	    }
+	}
+	
+	@Test
+	public void A_IserirContato() {
+		System.out.println("Teste Inserir Contato");
+				
+		JSONObject request = new JSONObject();
+		request.put("name", "Alex");
+		request.put("last_name", "Lifeson");
+		request.put("email", "alex@rush.com");
+		request.put("age", "65");
+		request.put("phone", "21122134");
+		request.put("address", "Broadviwe Av.");
+		request.put("state", "Otario");
+		request.put("city", "Toronto");
+		
+		System.out.println(request);
+		System.out.println();
+		
+		given()
+			.header("Content-Type", "application/json")
+			.contentType(ContentType.JSON)
+			.accept(ContentType.JSON)
+			.body(request.toJSONString())
+		.when()
+			.post("https://api-de-tarefas.herokuapp.com/contacts")
+		.then()
+			.statusCode(201);
+		
+		System.out.println();
+	}
+	
+	@Test
+	public void B_ListarContato() {
+		wait(1000);
+		System.out.println("Teste ListarContato");
+		
+		RestAssured.baseURI = "https://api-de-tarefas.herokuapp.com";
+		Response response = null;
+		
+		try {
+			response = RestAssured.given()
+	                .when()
+	                .get("/contacts");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
-		@Test
-		public void ListarContatos() {
-			
-			int jsonInd = jsonIdIndex("Lifeson");
-			int ID = idNumber("Lifeson");
-			
-			given()
-				.get("https://api-de-tarefas.herokuapp.com/contacts")
-			.then()
-				.statusCode(200)
-				.body("data.id[" + String.valueOf(jsonInd) + "]", equals(ID));
-	    
-		}
+        JsonPath jsonPathValidator = response.jsonPath();
+ 
+        List < String > allContactsNames = jsonPathValidator.getList("data.attributes.last-name");
+        List < String > allContactsID = jsonPathValidator.getList("data.id");
+
+        int contactIndex = allContactsNames.indexOf("Lifeson");
+        
+        System.out.println("id: " + allContactsID.get(contactIndex));
+        System.out.println("name " + jsonPathValidator.getList("data.attributes.name").get(contactIndex));
+        System.out.println("last-name " + jsonPathValidator.getList("data.attributes.last-name").get(contactIndex));
+        System.out.println("email " + jsonPathValidator.getList("data.attributes.email").get(contactIndex));
+        System.out.println("age " + jsonPathValidator.getList("data.attributes.age").get(contactIndex));
+        System.out.println("phone " + jsonPathValidator.getList("data.attributes.phone").get(contactIndex));
+        System.out.println("address " + jsonPathValidator.getList("data.attributes.address").get(contactIndex));
+        System.out.println("state " + jsonPathValidator.getList("data.attributes.state").get(contactIndex));
+        System.out.println("city " + jsonPathValidator.getList("data.attributes.city").get(contactIndex));
+        System.out.println();
+    }
+	
+	@Test
+	public void C_EditarContato() {
+		wait(1000);
+		System.out.println("Teste Editar Contato");
 		
-		@Test
-		public void EditarContato() {
-					
-			JSONObject request = new JSONObject();
-			request.put("name", "Alex");
-			request.put("last_name", "Zivojinovic Lifeson");
-			request.put("email", "alex@rush.com");
-			request.put("age", "65");
-			request.put("phone", "21122134");
-			request.put("address", "Broadviwe Av.");
-			request.put("state", "Otario");
-			request.put("city", "Toronto");
-			
-			System.out.println(request);
-			
-			int ID = idNumber("Lifeson");
-			
-			given()
-				.header("Content-Type", "application/json")
-				.contentType(ContentType.JSON)
-				.accept(ContentType.JSON)
-				.body(request.toJSONString())
-			.when()
-				.put("https://api-de-tarefas.herokuapp.com/contacts/" + String.valueOf(ID))
-			.then()
-				.statusCode(200);
-//				.log().all();
-		}
+		JSONObject request = new JSONObject();
+		request.put("name", "Alex");
+		request.put("last_name", "Zivojinovic Lifeson");
+		request.put("email", "alex@rush.com");
+		request.put("age", "65");
+		request.put("phone", "21122134");
+		request.put("address", "Broadviwe Av.");
+		request.put("state", "Otario");
+		request.put("city", "Toronto");
 		
-		@Test
-		public void ExcluirContato() {
-			
-			int ID = idNumber("Lifeson");
-			
-			when()
-				.delete("https://api-de-tarefas.herokuapp.com/contacts/" + String.valueOf(ID))
-			.then()
-				.statusCode(204);
-//				.log().all();
-		}
+		String ID = jsonID("Lifeson");
+		System.out.println("https://api-de-tarefas.herokuapp.com/contacts/" + ID);
+		System.out.println();
+		
+		given()
+			.header("Content-Type", "application/json")
+			.contentType(ContentType.JSON)
+			.accept(ContentType.JSON)
+			.body(request.toJSONString())
+		.when()
+			.put("https://api-de-tarefas.herokuapp.com/contacts/" + ID)
+		.then()
+			.statusCode(200);	
+	}
+	
+	@Test
+	public void D_ExcluirContato() {
+		wait(1000);
+		System.out.println("Teste Excluir Contato");
+		
+		String ID = jsonID("Zivojinovic Lifeson");
+		System.out.println("https://api-de-tarefas.herokuapp.com/contacts/" + ID);
+		
+		when()
+			.delete("https://api-de-tarefas.herokuapp.com/contacts/" + ID)
+		.then()
+			.statusCode(204);
+		System.out.println();
+		wait(1000);
 	}
 }
